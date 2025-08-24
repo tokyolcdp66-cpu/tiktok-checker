@@ -7,9 +7,10 @@ const app = express();
 // ✅ تفعيل CORS بدون مسافات
 app.use(cors({
   origin: 'https://followflow-d31bc.web.app',
-  methods: ['POST'],
+  methods: ['POST','GET'],
   allowedHeaders: ['Content-Type']
 }));
+
 
 app.use(express.json());
 
