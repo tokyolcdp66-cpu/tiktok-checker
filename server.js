@@ -1,10 +1,11 @@
+// server.js (نسخة محسنة)
+
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
 
-// ✅ تفعيل CORS بدون مسافات
 app.use(cors({
   origin: 'https://followflow-d31bc.web.app',
   methods: ['POST'],
@@ -23,14 +24,15 @@ app.post('/check-tiktok', async (req, res) => {
   try {
     const response = await axios.get(`https://www.tiktok.com/@${username}`, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9'
       },
-      validateStatus: (status) => status >= 200 && status < 500
+      validateStatus: () => true
     });
 
     const html = response.data;
 
-    if (response.status === 404 || response.status === 400) {
+    if (response.status === 404) {
       return res.json({ exists: false });
     }
 
@@ -38,22 +40,19 @@ app.post('/check-tiktok', async (req, res) => {
       return res.json({ exists: false });
     }
 
-    // تحقق من وجود علامات تدل على حساب حقيقي
-    if (
-      html.includes('seo-title') ||
-      html.includes('og:title') ||
-      html.includes('application/ld+json')
-    ) {
-      const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-      if (titleMatch && titleMatch[1]) {
-        const title = titleMatch[1].trim();
-        if (
-          title.includes('Page Not Found') ||
-          title.includes('TikTok - Make Your Day') ||
-          title === 'TikTok'
-        ) {
-          return res.json({ exists: false });
-        }
+    // ✅ تحقق من وجود meta description
+    const descMatch = html.match(/<meta name="description" content="([^"]+)"/i);
+    if (descMatch && descMatch[1]) {
+      if (descMatch[1].includes(`@${username}`)) {
+        return res.json({ exists: true });
+      }
+    }
+
+    // fallback على العنوان
+    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+    if (titleMatch && titleMatch[1]) {
+      const title = titleMatch[1].trim();
+      if (title.includes(`@${username}`)) {
         return res.json({ exists: true });
       }
     }
