@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": ["tiktok", "checker", "api"],
+  "keywords": [
+    "tiktok",
+    "checker",
+    "api"
+  ],
   "author": "tokyolcdp66-cpu",
   "license": "ISC",
   "dependencies": {

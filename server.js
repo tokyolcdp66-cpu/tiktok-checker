@@ -4,8 +4,13 @@ const cors = require('cors');
 
 const app = express();
 
-// تفعيل CORS
-app.use(cors());
+// ✅ تفعيل CORS لموقعك فقط
+app.use(cors({
+  origin: 'https://followflow-d31bc.web.app',
+  methods: ['POST', 'GET'],
+  allowedHeaders: ['Content-Type']
+}));
+
 // قراءة JSON من الطلب
 app.use(express.json());
 
@@ -26,7 +31,7 @@ app.post('/check-tiktok', async (req, res) => {
   }
 });
 
-// مسار تجريبي للتأكد من أن الخادم يعمل
+// مسار تجريبي
 app.get('/', (req, res) => {
   res.send('الخادم يعمل! ✅');
 });
